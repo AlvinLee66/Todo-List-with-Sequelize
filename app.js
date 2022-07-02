@@ -29,8 +29,8 @@ app.get('/', (req, res) => {
     raw: true,
     nest: true
   })
-    .then((todos) => { return res.render('index', { todos }) })
-    .catch((error) => { return res.status(422).json(error) })
+    .then(todos => { return res.render('index', { todos }) })
+    .catch(err => { return res.status(422).json(err) })
 })
 
 app.get('/users/login', (req, res) => {
@@ -86,14 +86,14 @@ app.post('/todos', (req, res) => {
   const name = req.body.name
   return Todo.create({ name, UserId })
     .then(() => res.redirect('/'))
-    .catch(error => console.log(error))
+    .catch(err => console.log(err))
 })
 
 app.get('/todos/:id', (req, res) => {
   const id = req.params.id
   return Todo.findByPk(id)
     .then(todo => res.render('detail', { todo: todo.toJSON() }))
-    .catch(error => console.log(error))
+    .catch(err => console.log(err))
 })
 
 app.get('/todos/:id/edit', (req, res) => {
@@ -101,7 +101,7 @@ app.get('/todos/:id/edit', (req, res) => {
   const id = req.params.id
   return Todo.findOne({ where: { id, UserId } })
     .then(todo => res.render('edit', { todo: todo.toJSON() }))
-    .catch(error => console.log(error))
+    .catch(err => console.log(err))
 })
 
 app.put('/todos/:id', (req, res) => {
@@ -115,7 +115,16 @@ app.put('/todos/:id', (req, res) => {
       return todo.save()
     })
     .then(() => res.redirect(`/todos/${id}`))
-    .catch(error => console.log(error))
+    .catch(err => console.log(err))
+})
+
+app.delete('/todos/:id', (req, res) => {
+  const UserId = req.user.id
+  const id = req.params.id
+  return Todo.findOne({ where: { id, UserId } })
+    .then(todo => todo.destroy())
+    .then(() => res.redirect('/'))
+    .catch(err => console.log(err))
 })
 
 app.listen(PORT, () => {
