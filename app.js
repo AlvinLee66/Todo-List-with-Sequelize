@@ -1,7 +1,7 @@
 const express = require('express')
+const session = require('express-session')
 const exphbs = require('express-handlebars')
 const methodOverride = require('method-override')
-const session = require('express-session')
 const bcrypt = require('bcryptjs')
 const usePassport = require('./config/passport')
 const app = express()
@@ -13,11 +13,13 @@ const passport = require('passport')
 
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
+
 app.use(session({
-secret: 'ThisIsMySecret',
-resave: false,
+  secret: 'ThisIsMySecret',
+  resave: false,
   saveUninitialized: true
 }))
+
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 usePassport(app)
@@ -71,6 +73,7 @@ app.post('/users/register', (req, res) => {
 })
 
 app.get('/users/logout', (req, res) => {
+  req.logout()
   res.redirect('/users/login')
 })
 
